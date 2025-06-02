@@ -1,34 +1,41 @@
 import argparse
 import time
 import selenium
+import os
+from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-import os
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Load URLs and execute JS with Selenium.")
-    parser.add_argument("--url_list", required=True, help="Path to text file with URLs (one per line).")
-    parser.add_argument("--js_script", required=True, help="Path to JavaScript file to execute.")
-    parser.add_argument("--sleep_seconds", type=int, default=300, help="Sleep time between pages. Default: 300s.")
+    parser.add_argument("--url_list", required=True, help="Text file with URLs (one per line).")
+    parser.add_argument("--script_folder", required=True, help="Folder with per-domain main.js scripts.")
+    parser.add_argument("--sleep_seconds", type=int, default=300, help="Sleep time between pages.")
     parser.add_argument("--loop", action="store_true", help="Loop through the URL list endlessly.")
-    parser.add_argument("--loop_sleep", type=int, default=60, help="Sleep time between loops (only with --loop). Default: 60s.")
-    parser.add_argument("--show_browser", action="store_true", help="Show the browser window (disable headless mode).")
+    parser.add_argument("--loop_sleep", type=int, default=60, help="Sleep between loops (only with --loop).")
+    parser.add_argument("--show_browser", action="store_true", help="Show browser window (disable headless mode).")
     return parser.parse_args()
 
 def read_urls_from_file(path):
     with open(path, 'r') as f:
         return [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
 
-def read_js_script(path):
-    with open(path, 'r') as f:
-        return f.read()
+def get_hostname(url):
+    parsed = urlparse(url if "://" in url else "https://" + url)
+    hostname = parsed.hostname or ""
+    if hostname.startswith("www."):
+        hostname = hostname[4:]
+    return hostname
 
-def normalize_url(url):
-    if not url.startswith(("http://", "https://")):
-        return "https://" + url
-    return url
+def get_script_for_url(script_folder, url):
+    hostname = get_hostname(url)
+    script_path = os.path.join(script_folder, hostname, "main.js")
+    if not os.path.isfile(script_path):
+        print(f"⚠️  Script not found for {hostname}: {script_path}")
+        return None
+    with open(script_path, 'r') as f:
+        return f.read()
 
 def create_browser(show_browser):
     options = Options()
@@ -43,30 +50,30 @@ def wait_for_page_load(driver, timeout=30):
         lambda d: d.execute_script("return document.readyState") == "complete"
     )
 
-def execute_js(driver, script):
-    return driver.execute_script(script)
+def process_url(driver, url, script_folder, sleep_seconds):
+    print(f"\n--- Loading URL: {url} ---")
+    js_code = get_script_for_url(script_folder, url)
+    if js_code is None:
+        print("Skipping (no JS found)...\n")
+        return
 
-def process_url(driver, url, js_code, sleep_seconds):
-    normalized_url = normalize_url(url)
-    print(f"\n--- Loading URL: {normalized_url} ---")
     try:
-        driver.get(normalized_url)
+        driver.get(url if url.startswith("http") else "https://" + url)
         wait_for_page_load(driver)
         print("Page loaded. Executing JavaScript...")
-        result = execute_js(driver, js_code)
+        result = driver.execute_script(js_code)
         print("JS executed. Result:", result)
         print(f"Sleeping for {sleep_seconds} seconds...\n")
         time.sleep(sleep_seconds)
-    except selenium.common.exceptions.InvalidArgumentException as e:
-        print(f"Error: {e}. This can happen for wrong URLs in the --url_list file")
+    except selenium.common.exceptions.WebDriverException as e:
+        print(f"⚠️  WebDriver error for {url}: {e}")
 
 def main():
     args = parse_arguments()
-    js_code = read_js_script(args.js_script)
 
     if args.loop:
-        print("Running in loop mode. Press Ctrl+C to stop.")
-    
+        print("🔁 Loop mode active. Press Ctrl+C to stop.")
+
     while True:
         urls = read_urls_from_file(args.url_list)
         if not urls:
@@ -77,10 +84,9 @@ def main():
             continue
 
         driver = create_browser(args.show_browser)
-
         try:
             for url in urls:
-                process_url(driver, url, js_code, args.sleep_seconds)
+                process_url(driver, url, args.script_folder, args.sleep_seconds)
         finally:
             driver.quit()
             print("Browser closed.")
