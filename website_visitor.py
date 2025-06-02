@@ -1,3 +1,4 @@
+import sys
 import argparse
 import time
 import selenium
@@ -100,4 +101,8 @@ def main():
             time.sleep(args.loop_sleep)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("You cancelled via CTRL-c")
+        sys.exit(0)
