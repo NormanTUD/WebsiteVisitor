@@ -1,5 +1,6 @@
 import argparse
 import time
+import selenium
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -40,13 +41,16 @@ def execute_js(driver, script):
 
 def process_url(driver, url, js_code, sleep_seconds):
     print(f"\n--- Loading URL: {url} ---")
-    driver.get(url)
-    wait_for_page_load(driver)
-    print("Page loaded. Executing JavaScript...")
-    result = execute_js(driver, js_code)
-    print("JS executed. Result:", result)
-    print(f"Sleeping for {sleep_seconds} seconds...\n")
-    time.sleep(sleep_seconds)
+    try:
+        driver.get(url)
+        wait_for_page_load(driver)
+        print("Page loaded. Executing JavaScript...")
+        result = execute_js(driver, js_code)
+        print("JS executed. Result:", result)
+        print(f"Sleeping for {sleep_seconds} seconds...\n")
+        time.sleep(sleep_seconds)
+    except selenium.common.exceptions.InvalidArgumentException as e:
+        print(f"Error: {e}. This can happen for wrong URLs in the --url_list file")
 
 def main():
     args = parse_arguments()
