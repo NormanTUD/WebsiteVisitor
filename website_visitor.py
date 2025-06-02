@@ -9,6 +9,11 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+import tldextract
+
+def get_root_domain(url):
+    ext = tldextract.extract(url)
+    return f"{ext.domain}.{ext.suffix}"
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Load URLs and execute JS with Selenium.")
@@ -34,7 +39,7 @@ def get_hostname(url):
     return hostname
 
 def get_script_for_url(script_folder, url):
-    hostname = get_hostname(url)
+    hostname = get_root_domain(url)
     script_path = os.path.join(script_folder, hostname, "main.js")
     if not os.path.isfile(script_path):
         print(f"⚠️  Script not found for {hostname}: {script_path}")
