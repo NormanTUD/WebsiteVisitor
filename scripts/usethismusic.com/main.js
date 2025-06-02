@@ -19,9 +19,6 @@ function updateStatus(msg) {
 	statusBox.textContent = msg;
 }
 
-updateStatus('Klicke auf die Überschrift um die Seite zu aktivieren...');
-document.getElementsByClassName("elementor-heading-title")[0].click()
-
 // Alle passenden Links sammeln
 updateStatus('Suche passende Links...');
 var links = Array.from(document.querySelectorAll('a[href^="javascript:IRON.sonaar.player.setPlayerAndPlay"]'));
