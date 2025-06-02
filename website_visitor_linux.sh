@@ -38,8 +38,8 @@ if [ -f "requirements.txt" ]; then
   TO_INSTALL=$(comm -23 <(sort requirements.txt) <(echo "$INSTALLED" | sort) | tr '\n' ' ')
 
   if [ -n "$TO_INSTALL" ]; then
-	  echo "Installiere fehlende Pakete: $TO_INSTALL"
-	  pip install $TO_INSTALL
+	  echo "Installiere Pakete, falls nicht installiert: $TO_INSTALL"
+	  pip install -q $TO_INSTALL
   else
 	  echo "Alle Pakete sind bereits installiert."
   fi
