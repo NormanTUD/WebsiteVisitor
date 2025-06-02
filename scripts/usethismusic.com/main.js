@@ -1,0 +1,15 @@
+// Alle passenden Links sammeln
+var links = Array.from(document.querySelectorAll('a[href^="javascript:IRON.sonaar.player.setPlayerAndPlay"]'));
+
+// Optional: Nur Links mit gültiger ID extrahieren (falls es andere geben könnte)
+links = links.filter(function(link) {
+	return /setPlayerAndPlay\(\s*\{\s*id\s*:\s*\d+\s*\}\s*\)/.test(link.getAttribute('href'));
+});
+
+// Zufällig eines auswählen und klicken
+if (links.length > 0) {
+	var randomIndex = Math.floor(Math.random() * links.length);
+	links[randomIndex].click();
+} else {
+	console.warn("Kein passender Link gefunden.");
+}
