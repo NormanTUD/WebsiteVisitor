@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+import random
 import tldextract
 
 def get_root_domain(url):
@@ -23,6 +24,7 @@ def parse_arguments():
     parser.add_argument("--loop", action="store_true", help="Loop through the URL list endlessly.")
     parser.add_argument("--loop_sleep", type=int, default=60, help="Sleep between loops (only with --loop).")
     parser.add_argument("--show_browser", action="store_true", help="Show browser window (disable headless mode).")
+    parser.add_argument("--url_shuffle", action="store_true", help="Activates URL shuffling.")
     parser.add_argument("--max_visit_time", type=int, default=300, help="Max time to stay on a page in seconds.")
 
     return parser.parse_args()
@@ -102,6 +104,9 @@ def main():
 
         driver = create_browser(args.show_browser)
         try:
+            if args.url_shuffle:
+                urls = random.shuffle(urls)
+
             for url in urls:
                 process_url(driver, url, args.script_folder, args.sleep_seconds, args.max_visit_time)
         finally:
