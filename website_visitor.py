@@ -105,7 +105,7 @@ def main():
         driver = create_browser(args.show_browser)
         try:
             if args.url_shuffle:
-                urls = random.shuffle(urls)
+                random.shuffle(urls)
 
             for url in urls:
                 process_url(driver, url, args.script_folder, args.sleep_seconds, args.max_visit_time)
