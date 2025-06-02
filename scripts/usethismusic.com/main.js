@@ -36,20 +36,6 @@ if (links.length > 0) {
 	var randomIndex = Math.floor(Math.random() * links.length);
 	updateStatus('Klicke zufälligen Link...');
 	links[randomIndex].click();
-	links[randomIndex].click();
-
-	updateStatus('Warte 5 Sekunden, dann klicke Play...');
-	setTimeout(function() {
-		var playButton = document.querySelector('div[aria-label="Play / Pause"].play.control--item.sricon-play');
-		if (playButton) {
-			updateStatus('Klicke Play/Pause-Button...');
-			playButton.click();
-			updateStatus('Play/Pause-Button geklickt.');
-		} else {
-			updateStatus('Play/Pause-Button nicht gefunden.');
-			console.warn("Play/Pause-Button nicht gefunden.");
-		}
-	}, 5000);
 } else {
 	updateStatus('Kein passender Link gefunden.');
 	console.warn("Kein passender Link gefunden.");
