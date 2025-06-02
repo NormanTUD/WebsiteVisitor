@@ -7,6 +7,8 @@ from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Load URLs and execute JS with Selenium.")
@@ -62,8 +64,15 @@ def process_url(driver, url, script_folder, sleep_seconds, max_visit_time):
 
     try:
         driver.get(url if url.startswith("http") else "https://" + url)
+
+
         wait_for_page_load(driver)
-        print("Page loaded. Executing JavaScript...")
+
+
+        print("Page loaded. Clicking somewhere to enable user input...")
+        ActionChains(driver).move_by_offset(10, 10).click().perform()
+
+        print("Clicked somewhere. Executing JavaScript...")
         result = driver.execute_script(js_code)
         print("JS executed. Result:", result)
         print(f"Sleeping for {sleep_seconds} seconds...\n")
