@@ -77,7 +77,7 @@ def process_url(driver, url, script_folder, sleep_seconds, max_visit_time):
 
 
         print("Page loaded. Clicking somewhere to enable user input...")
-        ActionChains(driver).move_by_offset(10, 10).click().perform()
+        ActionChains(driver).move_by_offset(0, 0).click().perform()
 
         print("Clicked somewhere. Executing JavaScript...")
         result = driver.execute_script(js_code)
