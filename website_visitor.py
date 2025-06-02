@@ -15,6 +15,8 @@ def parse_arguments():
     parser.add_argument("--loop", action="store_true", help="Loop through the URL list endlessly.")
     parser.add_argument("--loop_sleep", type=int, default=60, help="Sleep between loops (only with --loop).")
     parser.add_argument("--show_browser", action="store_true", help="Show browser window (disable headless mode).")
+    parser.add_argument("--max_visit_time", type=int, default=300, help="Max time to stay on a page in seconds.")
+
     return parser.parse_args()
 
 def read_urls_from_file(path):
@@ -50,7 +52,7 @@ def wait_for_page_load(driver, timeout=30):
         lambda d: d.execute_script("return document.readyState") == "complete"
     )
 
-def process_url(driver, url, script_folder, sleep_seconds):
+def process_url(driver, url, script_folder, sleep_seconds, max_visit_time):
     print(f"\n--- Loading URL: {url} ---")
     js_code = get_script_for_url(script_folder, url)
     if js_code is None:
@@ -64,7 +66,7 @@ def process_url(driver, url, script_folder, sleep_seconds):
         result = driver.execute_script(js_code)
         print("JS executed. Result:", result)
         print(f"Sleeping for {sleep_seconds} seconds...\n")
-        time.sleep(sleep_seconds)
+        time.sleep(min(sleep_seconds, max_visit_time))
     except selenium.common.exceptions.WebDriverException as e:
         print(f"⚠️  WebDriver error for {url}: {e}")
 
@@ -86,7 +88,7 @@ def main():
         driver = create_browser(args.show_browser)
         try:
             for url in urls:
-                process_url(driver, url, args.script_folder, args.sleep_seconds)
+                process_url(driver, url, args.script_folder, args.sleep_seconds, args.max_visit_time)
         finally:
             driver.quit()
             print("Browser closed.")
