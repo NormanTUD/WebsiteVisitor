@@ -47,7 +47,30 @@ def get_script_for_url(script_folder, url):
         print(f"⚠️  Script not found for {hostname}: {script_path}")
         return None
     with open(script_path, 'r') as f:
-        return f.read()
+        contents = f.read()
+
+        base_contents = """
+var statusBox = document.createElement('div');
+statusBox.style.position = 'fixed';
+statusBox.style.top = '0';
+statusBox.style.left = '0';
+statusBox.style.right = '0';
+statusBox.style.backgroundColor = '#333';
+statusBox.style.color = '#fff';
+statusBox.style.padding = '10px';
+statusBox.style.fontFamily = 'sans-serif';
+statusBox.style.fontSize = '14px';
+statusBox.style.zIndex = '9999';
+statusBox.style.textAlign = 'center';
+statusBox.textContent = 'Initialisiere...';
+document.body.appendChild(statusBox);
+
+function updateStatus(msg) {
+        statusBox.textContent = msg;
+}
+"""
+
+        return base_contents + contents
 
 def create_browser(show_browser):
     options = Options()
