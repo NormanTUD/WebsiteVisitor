@@ -60,6 +60,7 @@ def parse_arguments():
     parser.add_argument("--show_browser", action="store_true", help="Show browser window (disable headless mode).")
     parser.add_argument("--url_shuffle", action="store_true", help="Activates URL shuffling.")
     parser.add_argument("--max_visit_time", type=int, default=300, help="Max time to stay on a page in seconds.")
+    parser.add_argument("--mute", action="store_true", help="Mute browser audio.")
 
     return parser.parse_args()
 
@@ -106,12 +107,16 @@ function updateStatus(msg) {
 
         return base_contents + contents
 
-def create_browser(show_browser):
+def create_browser(show_browser, mute=False):
     options = Options()
     if not show_browser:
         options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
+
+    if mute:
+        options.add_argument("--mute-audio")
+
     return webdriver.Chrome(options=options)
 
 def wait_for_page_load(driver, timeout=30):
@@ -161,7 +166,8 @@ def main():
             time.sleep(args.loop_sleep)
             continue
 
-        driver = create_browser(args.show_browser)
+        driver = create_browser(args.show_browser, mute=args.mute)
+
         try:
             if args.url_shuffle:
                 random.shuffle(urls)
