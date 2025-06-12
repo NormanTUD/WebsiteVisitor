@@ -22,10 +22,14 @@ function waitForConsentAndClickNext() {
     });
 }
 
-waitForConsentAndClickNext();
+async function start_handling_website() {
+	waitForConsentAndClickNext();
 
-updateStatus("Suche den grossen Playbutton");
-let playbutton = document.getElementsByClassName("sc-button-xxlarge")[0];
+	await sleep(1000);
 
-updateStatus("Klicke den grossen Playbutton an")
-playbutton.click()
+	updateStatus("Suche den grossen Playbutton");
+	let playbutton = document.getElementsByClassName("sc-button-xxlarge")[0];
+
+	updateStatus("Klicke den grossen Playbutton an")
+	playbutton.click()
+}

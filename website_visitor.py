@@ -104,7 +104,12 @@ statusBox.textContent = 'Initialisiere...';
 document.body.appendChild(statusBox);
 
 function updateStatus(msg) {
-        statusBox.textContent = msg;
+    statusBox.textContent = msg;
+}
+
+function sleep(ms) {
+    updateStatus(`Warte ${ms} Millisekunden`);
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 """
 
