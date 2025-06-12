@@ -127,8 +127,6 @@ def create_browser(show_browser, mute=False):
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--ignore-ssl-errors')
 
-    options.add_argument("--auto-open-devtools-for-tabs")
-
     if mute:
         options.add_argument("--mute-audio")
 
