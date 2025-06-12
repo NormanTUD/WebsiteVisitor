@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-def realistic_user_interaction(driver, duration_seconds=30):
+def realistic_user_interaction(driver, duration_seconds):
     """
     Simuliert zufällige Mausbewegungen und Scrollen mit ActionChains über eine bestimmte Dauer.
     """
@@ -130,7 +130,6 @@ def process_url(driver, url, script_folder, sleep_seconds, max_visit_time):
         driver.get(url if url.startswith("http") else "https://" + url)
 
         wait_for_page_load(driver)
-
 
         print("Page loaded. Clicking somewhere to enable user input...")
         ActionChains(driver).move_by_offset(0, 0).click().perform()
