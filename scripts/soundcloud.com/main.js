@@ -12,6 +12,10 @@ function waitForElement(selector, description = "") {
 	});
 }
 
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function waitForConsentAndClickNext() {
 	await sleep(1000);
 
@@ -26,6 +30,7 @@ async function waitForConsentAndClickNext() {
 		} catch (e) {
 			alert(`Fehler beim Klicken des Consent-Buttons: ${e}`);
 			updateStatus(`Fehler beim Klicken des Consent-Buttons: ${e}`);
+			return;
 		}
 	} else {
 		updateStatus("Consent-Button nicht klickbar gefunden.");
@@ -33,6 +38,26 @@ async function waitForConsentAndClickNext() {
 	}
 
 	await sleep(2000);
+
+	updateStatus("Prüfe, ob Popup vorhanden ist...");
+
+	// Popup close button selector (alle Klassen in einem String, getrennt durch Punkte, für querySelector)
+	let popupSelector = ".modal__closeButton.sc-button.sc-button-secondary.sc-button-large.sc-button-icon";
+	let popupCloseBtn = document.querySelector(popupSelector);
+
+	if (popupCloseBtn && popupCloseBtn.offsetParent !== null) {
+		updateStatus("Popup gefunden, klicke es weg.");
+		try {
+			popupCloseBtn.click();
+			updateStatus("Popup geschlossen.");
+			// Warte kurz, dass das Popup komplett weg ist
+			await sleep(1000);
+		} catch (e) {
+			updateStatus("Fehler beim Klicken des Popup-Schließbuttons: " + e);
+		}
+	} else {
+		updateStatus("Kein Popup gefunden, fahre fort.");
+	}
 
 	updateStatus("Suche den großen Playbutton");
 
