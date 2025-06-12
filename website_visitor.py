@@ -35,11 +35,12 @@ def realistic_user_interaction(driver, duration_seconds):
         # Warte zufällig 0.2 - 1.5 Sekunden
         time.sleep(random.uniform(0.2, 1.5))
 
-        # Scrollen per Tastendruck (Page Down, Pfeil runter) mit geringer Wahrscheinlichkeit
-        if random.random() < 0.3:  # 30% Chance pro Schritt scrollen
+        if random.random() < 0.3:  # 30% Chance scrollen
             scroll_steps = random.randint(1, 3)
             for _ in range(scroll_steps):
-                actions.send_keys(Keys.PAGE_DOWN).perform()
+                # Zufällig scrollrichtung wählen: nach unten oder nach oben
+                key = random.choice([Keys.PAGE_DOWN, Keys.PAGE_UP])
+                actions.send_keys(key).perform()
                 time.sleep(random.uniform(0.1, 0.5))
 
         # Wichtig: Nach jedem move_by_offset muss ActionChains neu gestartet,
@@ -143,7 +144,7 @@ def process_url(driver, url, script_folder, sleep_seconds, max_visit_time):
         print("Clicked somewhere. Executing JavaScript...")
         result = driver.execute_script(js_code)
 
-        print("Starting realistic user interactioN")
+        print("Starting realistic user interaction")
         realistic_user_interaction(driver, duration_seconds=sleep_seconds)
 
         print("JS executed. Result:", result)
