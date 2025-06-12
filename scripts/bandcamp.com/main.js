@@ -1,13 +1,43 @@
 async function findAndClickAcceptButton() {
 	updateStatus('Waiting 2 seconds before searching for the button...');
-	await sleep(2000);
+	await new Promise(resolve => setTimeout(resolve, 2000)); // sleep 2s
 
 	updateStatus('Searching for button with text containing "accept all"...');
 
-	const buttons = [...document.querySelectorAll('button')];
-	const acceptButton = buttons.find(b => 
-		b.textContent && b.textContent.toLowerCase().includes('accept all')
-	);
+	function isAcceptAllButton(button) {
+		if (!button.textContent) return false;
+		var text = button.textContent.trim().toLowerCase();
+		return text === 'accept all';
+	}
+
+	function findAllShadowRoots(root = document) {
+		let results = [];
+		let elements = root.querySelectorAll('*');
+		elements.forEach(el => {
+			if (el.shadowRoot) {
+				results.push(el.shadowRoot);
+				results = results.concat(findAllShadowRoots(el.shadowRoot));
+			}
+		});
+		return results;
+	}
+
+	let acceptButton = null;
+
+	let buttons = [...document.querySelectorAll('button')];
+	acceptButton = buttons.find(b => b.textContent && b.textContent.toLowerCase().includes('accept all'));
+
+	if (!acceptButton) {
+		let shadowRoots = findAllShadowRoots();
+		for (let sr of shadowRoots) {
+			let shadowButtons = [...sr.querySelectorAll('button')];
+			acceptButton = shadowButtons.find(isAcceptAllButton);
+			if (acceptButton) {
+				updateStatus('Found Accept all button in shadowRoot!');
+				break;
+			}
+		}
+	}
 
 	if (acceptButton) {
 		updateStatus('Button found! Clicking it now...');
@@ -41,6 +71,8 @@ function find_play_buttons_play_random_one() {
 
 async function accept_cookies_and_play_random() {
 	await findAndClickAcceptButton();
+
+	await sleep(2456);
 
 	find_play_buttons_play_random_one();
 }
