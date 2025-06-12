@@ -21,7 +21,7 @@ function tryClickCookieButton() {
         cookieButton.click();
         cookieClicked = true;
         clearInterval(cookieIntervalId);
-        console.log('Cookie button clicked');
+        updateStatus('Cookie button clicked');
       }
     }, randomDelay);
     return true;
@@ -38,19 +38,19 @@ cookieIntervalId = setInterval(() => {
   const elapsed = Date.now() - startTime;
   if (elapsed > 60000) {
     // Fallback nach 1 Minute
-    console.log('Fallback: Trying to click "Accept all" button');
+    updateStatus('Fallback: Trying to click "Accept all" button');
     const buttons = document.querySelectorAll('button.yt-spec-button-shape-next');
     for (let btn of buttons) {
       if (btn.textContent.trim() === 'Accept all') {
         btn.click();
         cookieClicked = true;
         clearInterval(cookieIntervalId);
-        console.log('"Accept all" button clicked');
+        updateStatus('"Accept all" button clicked');
         break;
       }
     }
     if (!cookieClicked) {
-      console.log('No cookie button found after 1 minute');
+      updateStatus('No cookie button found after 1 minute');
       clearInterval(cookieIntervalId);
     }
   } else {
