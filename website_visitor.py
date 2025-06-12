@@ -188,7 +188,11 @@ def main():
                 random.shuffle(urls)
 
             for url in urls:
-                process_url(driver, url, args.script_folder, args.sleep_seconds, args.max_visit_time)
+                try:
+                    process_url(driver, url, args.script_folder, args.sleep_seconds, args.max_visit_time)
+                except urllib3.exceptions.ProtocolError as e:
+                    print(f"Error while trying to process URL {url}: {e}. Trying to restart browser...")
+                    driver = create_browser(args.show_browser, mute=args.mute)
         finally:
             driver.quit()
             print("Browser closed.")
