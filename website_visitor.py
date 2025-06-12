@@ -3,14 +3,48 @@ import argparse
 import time
 import selenium
 import os
+import random
+import tldextract
 from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-import random
-import tldextract
+from selenium.webdriver.common.keys import Keys
+
+def realistic_user_interaction(driver, duration_seconds=30):
+    """
+    Simuliert zufällige Mausbewegungen und Scrollen mit ActionChains über eine bestimmte Dauer.
+    """
+    end_time = time.time() + duration_seconds
+    actions = ActionChains(driver)
+
+    # Fenstergröße abfragen (über JS)
+    window_width = driver.execute_script("return window.innerWidth")
+    window_height = driver.execute_script("return window.innerHeight")
+
+    while time.time() < end_time:
+        # Zufällige Mausposition (innerhalb des Viewports)
+        x = random.randint(0, window_width - 1)
+        y = random.randint(0, window_height - 1)
+
+        # Maus bewegt sich zu (x, y)
+        actions.move_by_offset(x, y).perform()
+
+        # Warte zufällig 0.2 - 1.5 Sekunden
+        time.sleep(random.uniform(0.2, 1.5))
+
+        # Scrollen per Tastendruck (Page Down, Pfeil runter) mit geringer Wahrscheinlichkeit
+        if random.random() < 0.3:  # 30% Chance pro Schritt scrollen
+            scroll_steps = random.randint(1, 3)
+            for _ in range(scroll_steps):
+                actions.send_keys(Keys.PAGE_DOWN).perform()
+                time.sleep(random.uniform(0.1, 0.5))
+
+        # Wichtig: Nach jedem move_by_offset muss ActionChains neu gestartet,
+        # sonst wird der Offset addiert statt absolut.
+        actions.reset_actions()
 
 def get_root_domain(url):
     ext = tldextract.extract(url)
@@ -95,7 +129,6 @@ def process_url(driver, url, script_folder, sleep_seconds, max_visit_time):
     try:
         driver.get(url if url.startswith("http") else "https://" + url)
 
-
         wait_for_page_load(driver)
 
 
@@ -104,6 +137,10 @@ def process_url(driver, url, script_folder, sleep_seconds, max_visit_time):
 
         print("Clicked somewhere. Executing JavaScript...")
         result = driver.execute_script(js_code)
+
+        print("Starting realistic user interactioN")
+        realistic_user_interaction(driver, duration_seconds=sleep_seconds)
+
         print("JS executed. Result:", result)
         print(f"Sleeping for {sleep_seconds} seconds...\n")
         time.sleep(min(sleep_seconds, max_visit_time))
