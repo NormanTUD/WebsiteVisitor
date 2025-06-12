@@ -139,7 +139,7 @@ def wait_for_page_load(driver, timeout=30):
 
 def process_url(driver, url):
     print(f"\n--- Loading URL: {url} ---")
-    js_code = get_script_for_url(args.script_folder, url)
+    js_code = get_script_for_url(url)
     if js_code is None:
         print("Skipping (no JS found)...\n")
         return
