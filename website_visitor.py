@@ -28,41 +28,20 @@ parser.add_argument("--scroll_chance", type=float, default=0.1, help="Chance (0 
 
 args = parser.parse_args()
 
-def realistic_user_interaction(driver, duration_seconds):
+def realistic_user_interaction(driver, duration_seconds, scroll_chance=0.3):
     end_time = time.time() + duration_seconds
-    body = driver.find_element(By.TAG_NAME, "body")
-    window_width = driver.execute_script("return window.innerWidth")
-    window_height = driver.execute_script("return window.innerHeight")
-
+    actions = ActionChains(driver)
+    
     while time.time() < end_time:
-        actions = ActionChains(driver)
-
-        x = random.randint(0, window_width - 1)
-        y = 0
-
-        # bewegt Maus zu (x,y) relativ zum <body>
-
-        try:
-            actions.move_to_element_with_offset(body, x, y).perform()
-        except selenium.common.exceptions.MoveTargetOutOfBoundsException:
-            print(f"⚠️  Offset ({x},{y}) out of bounds. Retrying with safe values...")
-            safe_x = min(max(x, 10), window_width - 10)
-            safe_y = y
-            try:
-                actions = ActionChains(driver)
-                actions.move_to_element_with_offset(body, safe_x, safe_y).perform()
-            except Exception as e:
-                print(f"❌ Still failed with safe offset ({safe_x},{safe_y}): {e}")
-
-
-        time.sleep(random.uniform(0.2, 1.5))
-
-        if random.random() < args.scroll_chance:
-            scroll_steps = random.randint(1, 3)
-            for _ in range(scroll_steps):
-                key = random.choice([Keys.PAGE_DOWN, Keys.PAGE_UP])
-                actions.send_keys(key).perform()
-                time.sleep(random.uniform(0.5, 1))
+        # Zufällig Page Up oder Page Down drücken
+        if random.random() < scroll_chance:
+            key = random.choice([Keys.PAGE_DOWN, Keys.PAGE_UP])
+            actions.send_keys(key).perform()
+            print(f"Pressed {key}")
+            time.sleep(random.uniform(0.5, 1.5))
+        else:
+            # Optional: Wartezeit ohne Aktion, um es realistischer zu machen
+            time.sleep(random.uniform(0.5, 2))
 
 def get_root_domain(url):
     ext = tldextract.extract(url)
