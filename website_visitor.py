@@ -24,7 +24,7 @@ def realistic_user_interaction(driver, duration_seconds):
         actions = ActionChains(driver)
 
         x = random.randint(0, window_width - 1)
-        y = random.randint(0, window_height - 1)
+        y = 0
 
         # bewegt Maus zu (x,y) relativ zum <body>
 
@@ -33,7 +33,7 @@ def realistic_user_interaction(driver, duration_seconds):
         except selenium.common.exceptions.MoveTargetOutOfBoundsException:
             print(f"⚠️  Offset ({x},{y}) out of bounds. Retrying with safe values...")
             safe_x = min(max(x, 10), window_width - 10)
-            safe_y = min(max(y, 10), window_height - 10)
+            safe_y = y
             try:
                 actions = ActionChains(driver)
                 actions.move_to_element_with_offset(body, safe_x, safe_y).perform()
@@ -43,7 +43,7 @@ def realistic_user_interaction(driver, duration_seconds):
 
         time.sleep(random.uniform(0.2, 1.5))
 
-        if random.random() < 0.1:
+        if random.random() < args.scroll_chance:
             scroll_steps = random.randint(1, 3)
             for _ in range(scroll_steps):
                 key = random.choice([Keys.PAGE_DOWN, Keys.PAGE_UP])
@@ -65,6 +65,7 @@ def parse_arguments():
     parser.add_argument("--url_shuffle", action="store_true", help="Activates URL shuffling.")
     parser.add_argument("--max_visit_time", type=int, default=300, help="Max time to stay on a page in seconds.")
     parser.add_argument("--mute", action="store_true", help="Mute browser audio.")
+    parser.add_argument("--scroll_chance", type=float, default=0.1, help="Chance (0 to 1) that scrolling happens randomly.")
 
     return parser.parse_args()
 
