@@ -14,38 +14,40 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
 def realistic_user_interaction(driver, duration_seconds):
-    """
-    Simuliert zufällige Mausbewegungen und Scrollen mit ActionChains über eine bestimmte Dauer.
-    """
     end_time = time.time() + duration_seconds
-    actions = ActionChains(driver)
-
-    # Fenstergröße abfragen (über JS)
+    body = driver.find_element(By.TAG_NAME, "body")
     window_width = driver.execute_script("return window.innerWidth")
     window_height = driver.execute_script("return window.innerHeight")
 
     while time.time() < end_time:
-        # Zufällige Mausposition (innerhalb des Viewports)
+        actions = ActionChains(driver)
+
         x = random.randint(0, window_width - 1)
         y = random.randint(0, window_height - 1)
 
-        # Maus bewegt sich zu (x, y)
-        actions.move_by_offset(x, y).perform()
+        # bewegt Maus zu (x,y) relativ zum <body>
 
-        # Warte zufällig 0.2 - 1.5 Sekunden
+        try:
+            actions.move_to_element_with_offset(body, x, y).perform()
+        except selenium.common.exceptions.MoveTargetOutOfBoundsException:
+            print(f"⚠️  Offset ({x},{y}) out of bounds. Retrying with safe values...")
+            safe_x = min(max(x, 10), window_width - 10)
+            safe_y = min(max(y, 10), window_height - 10)
+            try:
+                actions = ActionChains(driver)
+                actions.move_to_element_with_offset(body, safe_x, safe_y).perform()
+            except Exception as e:
+                print(f"❌ Still failed with safe offset ({safe_x},{safe_y}): {e}")
+
+
         time.sleep(random.uniform(0.2, 1.5))
 
-        if random.random() < 0.3:  # 30% Chance scrollen
+        if random.random() < 0.3:
             scroll_steps = random.randint(1, 3)
             for _ in range(scroll_steps):
-                # Zufällig scrollrichtung wählen: nach unten oder nach oben
                 key = random.choice([Keys.PAGE_DOWN, Keys.PAGE_UP])
                 actions.send_keys(key).perform()
                 time.sleep(random.uniform(0.1, 0.5))
-
-        # Wichtig: Nach jedem move_by_offset muss ActionChains neu gestartet,
-        # sonst wird der Offset addiert statt absolut.
-        actions.reset_actions()
 
 def get_root_domain(url):
     ext = tldextract.extract(url)
@@ -139,7 +141,15 @@ def process_url(driver, url, script_folder, sleep_seconds, max_visit_time):
         wait_for_page_load(driver)
 
         print("Page loaded. Clicking somewhere to enable user input...")
-        ActionChains(driver).move_by_offset(0, 0).click().perform()
+
+        # Alternative: Klick in die Mitte des Viewports
+        try:
+            width = driver.execute_script("return window.innerWidth")
+            height = driver.execute_script("return window.innerHeight")
+            actions = ActionChains(driver)
+            actions.move_by_offset(width // 2, height // 2).click().perform()
+        except Exception as e:
+            print(f"❌ Failed to click even at safe location: {e}")
 
         print("Clicked somewhere. Executing JavaScript...")
         result = driver.execute_script(js_code)

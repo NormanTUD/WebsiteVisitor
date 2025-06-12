@@ -11,7 +11,7 @@ function waitForElement(selector, description, callback) {
 }
 
 function waitForConsentAndClickNext() {
-    waitForElement(".onetrust-accept-btn-handler", "Cookie-Zustimmung", (consentBtn) => {
+    waitForElement("#onetrust-accept-btn-handler", "Cookie-Zustimmung", (consentBtn) => {
         consentBtn.click();
         updateStatus("Cookie-Zustimmung geklickt.");
 
