@@ -40,9 +40,14 @@ async function waitForConsentAndClickNext() {
 	const playBtn = await waitForElement(".sc-button-xxlarge", "großer Playbutton");
 
 	if (playBtn && typeof playBtn.click === "function") {
-		updateStatus("Klicke den großen Playbutton an");
-		playBtn.click();
-		updateStatus("Playbutton geklickt.");
+		// Prüfen, ob der Button schon die Klasse 'sc-button-pause' hat
+		if (playBtn.classList.contains("sc-button-pause")) {
+			updateStatus("Playbutton ist bereits im Pause-Zustand (spielt schon). Klicke nicht.");
+		} else {
+			updateStatus("Klicke den großen Playbutton an");
+			playBtn.click();
+			updateStatus("Playbutton geklickt.");
+		}
 	} else {
 		updateStatus("Playbutton nicht klickbar gefunden.");
 	}
