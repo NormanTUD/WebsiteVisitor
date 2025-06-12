@@ -68,8 +68,6 @@ def get_root_domain(url):
     ext = tldextract.extract(url)
     return f"{ext.domain}.{ext.suffix}"
 
-def parse_arguments():
-
 def read_urls_from_file():
     with open(args.url_list, 'r') as f:
         return [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
