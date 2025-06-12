@@ -33,3 +33,5 @@ async function start_handling_website() {
 	updateStatus("Klicke den grossen Playbutton an")
 	playbutton.click()
 }
+
+start_handling_website()
