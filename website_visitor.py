@@ -48,7 +48,7 @@ def realistic_user_interaction(driver, duration_seconds):
             for _ in range(scroll_steps):
                 key = random.choice([Keys.PAGE_DOWN, Keys.PAGE_UP])
                 actions.send_keys(key).perform()
-                time.sleep(random.uniform(0.1, 0.5))
+                time.sleep(random.uniform(0.5, 1))
 
 def get_root_domain(url):
     ext = tldextract.extract(url)
