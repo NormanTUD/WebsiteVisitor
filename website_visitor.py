@@ -43,7 +43,7 @@ def realistic_user_interaction(driver, duration_seconds):
 
         time.sleep(random.uniform(0.2, 1.5))
 
-        if random.random() < 0.3:
+        if random.random() < 0.1:
             scroll_steps = random.randint(1, 3)
             for _ in range(scroll_steps):
                 key = random.choice([Keys.PAGE_DOWN, Keys.PAGE_UP])
