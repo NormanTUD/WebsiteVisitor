@@ -5,6 +5,7 @@ import selenium
 import os
 import random
 import tldextract
+import urllib3
 from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -125,6 +126,9 @@ def create_browser(show_browser, mute=False):
 
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--ignore-ssl-errors')
+
+    options.add_argument("--auto-open-devtools-for-tabs")
+    options.add_argument("--disable-blink-features=AutomationControlled")
 
     if mute:
         options.add_argument("--mute-audio")
