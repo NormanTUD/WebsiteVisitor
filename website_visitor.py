@@ -35,9 +35,15 @@ def realistic_user_interaction(driver, duration_seconds, scroll_chance=0.3):
     while time.time() < end_time:
         # Zufällig Page Up oder Page Down drücken
         if random.random() < scroll_chance:
+            key_map = {
+                Keys.PAGE_DOWN: "PAGE_DOWN",
+                Keys.PAGE_UP: "PAGE_UP"
+            }
+
             key = random.choice([Keys.PAGE_DOWN, Keys.PAGE_UP])
             actions.send_keys(key).perform()
-            print(f"Pressed {key}")
+            print(f"Pressed {key_map.get(key, str(key))}")
+
             time.sleep(random.uniform(0.5, 1.5))
         else:
             # Optional: Wartezeit ohne Aktion, um es realistischer zu machen
