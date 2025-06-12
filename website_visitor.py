@@ -110,6 +110,7 @@ def create_browser():
     options.add_argument("--start-maximized")
 
     options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--ignore-certificate-errors-spki-list')
     options.add_argument('--ignore-ssl-errors')
 
     if args.mute:
