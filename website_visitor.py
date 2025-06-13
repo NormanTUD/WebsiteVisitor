@@ -25,6 +25,8 @@ parser.add_argument("--url_shuffle", action="store_true", help="Activates URL sh
 parser.add_argument("--max_visit_time", type=int, default=300, help="Max time to stay on a page in seconds.")
 parser.add_argument("--mute", action="store_true", help="Mute browser audio.")
 parser.add_argument("--scroll_chance", type=float, default=0.1, help="Chance (0 to 1) that scrolling happens randomly.")
+parser.add_argument("--scroll_min_random_time", type=float, default=0.5, help="Min random time for random scrolling.")
+parser.add_argument("--scroll_max_random_time", type=float, default=2, help="Max random time for random scrolling.")
 
 args = parser.parse_args()
 
@@ -44,10 +46,7 @@ def realistic_user_interaction(driver, duration_seconds, scroll_chance=0.3):
             actions.send_keys(key).perform()
             print(f"Pressed {key_map.get(key, str(key))}")
 
-            time.sleep(random.uniform(0.5, 1.5))
-        else:
-            # Optional: Wartezeit ohne Aktion, um es realistischer zu machen
-            time.sleep(random.uniform(0.5, 2))
+        time.sleep(random.uniform(args.scroll_min_random_time, args.scroll_max_random_time))
 
 def get_root_domain(url):
     ext = tldextract.extract(url)
