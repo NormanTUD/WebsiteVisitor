@@ -12,14 +12,10 @@ function waitForElement(selector, description = "") {
 	});
 }
 
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function waitForConsentAndClickNext() {
-	await sleep(1000);
+	await sleepRandomly(1000, 2000);
 
-	// Warte auf den Consent-Button
+	updateStatus("Warte auf den Consent-Button")
 	const consentBtn = await waitForElement("#onetrust-accept-btn-handler", "Cookie-Zustimmung");
 
 	if (consentBtn && typeof consentBtn.click === "function") {
@@ -34,14 +30,14 @@ async function waitForConsentAndClickNext() {
 		}
 	} else {
 		updateStatus("Consent-Button nicht klickbar gefunden.");
-		return; // Abbrechen, wenn Button nicht da oder nicht klickbar
+		return;
 	}
 
-	await sleep(2000);
+	await sleepRandomly(1000, 2000);
 
 	updateStatus("Prüfe, ob Popup vorhanden ist...");
 
-	// Popup close button selector (alle Klassen in einem String, getrennt durch Punkte, für querySelector)
+	updateStatus("Popup close button selector (alle Klassen in einem String, getrennt durch Punkte, für querySelector)")
 	let popupSelector = ".modal__closeButton.sc-button.sc-button-secondary.sc-button-large.sc-button-icon";
 	let popupCloseBtn = document.querySelector(popupSelector);
 
@@ -50,8 +46,8 @@ async function waitForConsentAndClickNext() {
 		try {
 			popupCloseBtn.click();
 			updateStatus("Popup geschlossen.");
-			// Warte kurz, dass das Popup komplett weg ist
-			await sleep(1000);
+			updateStatus("Warte kurz, dass das Popup komplett weg ist")
+			await sleepRandomly(1000, 2000);
 		} catch (e) {
 			updateStatus("Fehler beim Klicken des Popup-Schließbuttons: " + e);
 		}
@@ -61,11 +57,11 @@ async function waitForConsentAndClickNext() {
 
 	updateStatus("Suche den großen Playbutton");
 
-	// Warte auf den Play-Button
+	updateStatus("Warte auf den Play-Button")
 	const playBtn = await waitForElement(".sc-button-xxlarge", "großer Playbutton");
 
 	if (playBtn && typeof playBtn.click === "function") {
-		// Prüfen, ob der Button schon die Klasse 'sc-button-pause' hat
+		updateStatus("Prüfen, ob der Button schon die Klasse 'sc-button-pause' hat")
 		if (playBtn.classList.contains("sc-button-pause")) {
 			updateStatus("Playbutton ist bereits im Pause-Zustand (spielt schon). Klicke nicht.");
 		} else {

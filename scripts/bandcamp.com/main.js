@@ -72,7 +72,7 @@ function find_play_buttons_play_random_one() {
 async function accept_cookies_and_play_random() {
 	await findAndClickAcceptButton();
 
-	await sleep(2456);
+	await sleepRandomly(2, 4);
 
 	find_play_buttons_play_random_one();
 }
