@@ -84,12 +84,50 @@ statusBox.style.padding = '10px';
 statusBox.style.fontFamily = 'sans-serif';
 statusBox.style.fontSize = '14px';
 statusBox.style.zIndex = '9999';
-statusBox.style.textAlign = 'center';
-statusBox.textContent = 'Initialisiere...';
+statusBox.style.textAlign = 'left';
+statusBox.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.5)';
 document.body.appendChild(statusBox);
 
+var statusHeader = document.createElement('div');
+statusHeader.style.display = 'flex';
+statusHeader.style.justifyContent = 'space-between';
+statusHeader.style.alignItems = 'center';
+
+var statusText = document.createElement('span');
+statusText.textContent = 'Initialisiere...';
+
+var toggleButton = document.createElement('span');
+toggleButton.textContent = '▼';
+toggleButton.style.cursor = 'pointer';
+toggleButton.style.marginLeft = '10px';
+toggleButton.style.userSelect = 'none';
+
+statusHeader.appendChild(statusText);
+statusHeader.appendChild(toggleButton);
+statusBox.appendChild(statusHeader);
+
+var statusLog = document.createElement('div');
+statusLog.style.display = 'none';
+statusLog.style.marginTop = '10px';
+statusLog.style.maxHeight = '150px';
+statusLog.style.overflowY = 'auto';
+statusLog.style.borderTop = '1px solid #555';
+statusLog.style.paddingTop = '5px';
+statusBox.appendChild(statusLog);
+
+var isOpen = false;
+toggleButton.onclick = function () {
+    isOpen = !isOpen;
+    statusLog.style.display = isOpen ? 'block' : 'none';
+    toggleButton.textContent = isOpen ? '▲' : '▼';
+};
+
 function updateStatus(msg) {
-    statusBox.textContent = msg;
+    const time = new Date().toLocaleTimeString();
+    const logEntry = document.createElement('div');
+    logEntry.textContent = `[${time}] ${msg}`;
+    statusLog.prepend(logEntry);
+    statusText.textContent = msg;
 }
 
 function sleep(ms) {
