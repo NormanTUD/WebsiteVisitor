@@ -134,6 +134,11 @@ function sleep(ms) {
     updateStatus(`Warte ${ms} Millisekunden`);
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+async function sleepRandomly(minMs, maxMs) {
+    const randomMs = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+    await sleep(randomMs);
+}
 """
 
         return base_contents + contents
