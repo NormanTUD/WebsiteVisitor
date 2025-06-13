@@ -19,6 +19,16 @@ function click_random_play_button() {
 
                 buttons = Array.from(document.getElementsByClassName("play-button-rings-svg"));
                 buttons = buttons.filter(isVisible);
+
+		buttons = buttons
+			.filter(isVisible)
+			.map(el => {
+				while (el && el.tagName !== "BUTTON") {
+					el = el.parentElement;
+				}
+				return el;
+			})
+			.filter(Boolean);
         }
 
         if(buttons.length) {
