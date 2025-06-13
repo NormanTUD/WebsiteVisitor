@@ -179,7 +179,6 @@ def process_url(driver, url):
 
         print("Page loaded. Clicking somewhere to enable user input...")
 
-        # Alternative: Klick in die Mitte des Viewports
         try:
             width = driver.execute_script("return window.innerWidth")
             height = driver.execute_script("return window.innerHeight")
